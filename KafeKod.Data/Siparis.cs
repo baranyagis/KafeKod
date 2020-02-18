@@ -18,9 +18,12 @@ namespace KafeKod.Data
 
         public string ToplamTutarTL => string.Format("{0:0.00}₺", ToplamTutar());
 
-        public decimal ToplamTutar()
+        public decimal ToplamTutar() => siparisdetaylar.Sum(Fiyat);
+
+
+        private decimal Fiyat(SiparisDetay x)
         {
-            return siparisdetaylar.Sum(x => x.Tutar());
+            return x.Tutar();
         }
     }
 }

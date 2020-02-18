@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace KafeKod.Data
 {
-    class KafeVeri
+    public class KafeVeri
     {
+        public List<Urun> urunler { get; set; }
+
+        public List<Siparis> AktifSiparisler { get; set; }
+
+        public List<Siparis> GecmisSiparis { get; set; }
     }
 }
