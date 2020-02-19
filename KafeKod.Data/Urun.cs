@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace KafeKod.Data
 {
-    public class Urun
+    public class Urun :IComparable
     {
         public string UrunAd { get; set; }
         public decimal BirimFiyat { get; set; }
 
-
+        public int CompareTo(object obj) => UrunAd.CompareTo(((Urun)obj).UrunAd);
+       
 
         public override string ToString()
         {

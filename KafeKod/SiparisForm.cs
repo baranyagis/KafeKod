@@ -13,6 +13,8 @@ namespace KafeKod
 {
     public partial class SiparisForm : Form
     {
+        public event EventHandler<MasaTasimaEventArgs> MasaTasima; 
+
         KafeVeri db;
         Siparis siparis;
         BindingList<SiparisDetay> blSiparisDetaylar; //DataGridView ı tektikler
@@ -22,12 +24,26 @@ namespace KafeKod
             this.siparis = siparis;
             blSiparisDetaylar = new BindingList<SiparisDetay>(siparis.SiparisDetaylar);
             InitializeComponent();
+            MasaNolariYukle();
             MasaNoGuncelle();
             TutarGuncelle();
             cboUrun.DataSource = db.Urunler;
            // cboUrun.SelectedItem = null;
             dgvSiparisDetaylari.DataSource = blSiparisDetaylar;
 
+        }
+
+        private void MasaNolariYukle()
+        {
+            cboMasaNo.Items.Clear();
+            for (int i = 1; i <= db.MasaAdet; i++)
+            {
+                if (!db.AktifSiparisler.Any(x=> x.MasaNo==i)) 
+                {
+                    cboMasaNo.Items.Add(i);
+                }
+
+            }
         }
 
         private void TutarGuncelle()
@@ -96,5 +112,69 @@ namespace KafeKod
             }
 
         }
+
+        private void dgvSiparisDetaylari_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button==MouseButtons.Right)
+            {
+                int rowIndex = dgvSiparisDetaylari.HitTest(e.X, e.Y).RowIndex;
+                if (rowIndex>-1)
+                {
+                    dgvSiparisDetaylari.ClearSelection();
+                    dgvSiparisDetaylari.Rows[rowIndex].Selected = true;
+                    cmsSiparisDetay.Show(MousePosition);
+                }
+                
+            }
+        }
+
+        private void tsmSiparisDetaySil_Click(object sender, EventArgs e)
+        {
+            if (dgvSiparisDetaylari.SelectedRows.Count>0)
+            {
+                var seciliSatir = dgvSiparisDetaylari.SelectedRows[0];
+                var sipDetay = (SiparisDetay)seciliSatir.DataBoundItem;
+                blSiparisDetaylar.Remove(sipDetay);
+            } 
+
+            TutarGuncelle();
+        }
+
+        private void btnMasaTasi_Click(object sender, EventArgs e)
+        {
+            if (cboMasaNo.SelectedItem==null)
+            {
+                MessageBox.Show("Lütfen masa numarası seçiniz");
+                return;
+            }
+
+            int eskiMasaNo = siparis.MasaNo;
+
+
+            int hedefMasaNo = (int)cboMasaNo.SelectedItem;
+            siparis.MasaNo = hedefMasaNo;
+            MasaNoGuncelle();
+            MasaNolariYukle();
+
+            if (MasaTasima!=null)
+            {
+                var args = new MasaTasimaEventArgs
+                {
+                    EskiMasaNo = eskiMasaNo,
+                    YeniMasaNo = cboMasaNo.SelectedIndex,
+                    TasinanSiparis = siparis
+                    
+                };
+                MasaTasima(this, args); //EVENT ÇAĞIRMA
+            }
+        }
+    }
+
+    public class MasaTasimaEventArgs:EventArgs
+    {
+        public Siparis TasinanSiparis { get; set; }
+        public int EskiMasaNo { get; set; }
+        public int YeniMasaNo { get; set; }
+
     }
 }
