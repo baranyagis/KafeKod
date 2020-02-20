@@ -149,24 +149,25 @@ namespace KafeKod
             }
 
             int eskiMasaNo = siparis.MasaNo;
-
-
             int hedefMasaNo = (int)cboMasaNo.SelectedItem;
-            siparis.MasaNo = hedefMasaNo;
-            MasaNoGuncelle();
-            MasaNolariYukle();
 
-            if (MasaTasima!=null)
+            if (MasaTasima != null)
             {
                 var args = new MasaTasimaEventArgs
                 {
                     EskiMasaNo = eskiMasaNo,
-                    YeniMasaNo = cboMasaNo.SelectedIndex,
+                    YeniMasaNo = hedefMasaNo,
                     TasinanSiparis = siparis
-                    
+
                 };
                 MasaTasima(this, args); //EVENT ÇAĞIRMA
             }
+
+            siparis.MasaNo = hedefMasaNo;
+            MasaNoGuncelle();
+            MasaNolariYukle();
+
+
         }
     }
 

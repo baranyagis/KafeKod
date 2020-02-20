@@ -132,17 +132,13 @@ namespace KafeKod
         {
             //1 Eski masa boşalt 2 yeni masaya sipariş koy
 
-            ListViewItem lviEskiMasa = null;
-            foreach (ListViewItem item in lvwMasalar.Items)
-            {
-                if (item.Tag == e.TasinanSiparis)
-                {
-                    lviEskiMasa = item;
-                    break;
-                }
-            }
+            ListViewItem lviEskiMasa = MasaBul(e.EskiMasaNo);
             lviEskiMasa.Tag = e.EskiMasaNo;
-            lviEskiMasa.ImageKey="bos";
+            lviEskiMasa.ImageKey = "bos";
+
+            ListViewItem lviYeniMasa = MasaBul(e.YeniMasaNo);
+            lviYeniMasa.Tag = e.TasinanSiparis;
+            lviYeniMasa.ImageKey = "dolu";
         }
 
         private void tsmiGecmisSiparisler_Click(object sender, EventArgs e)
@@ -163,5 +159,21 @@ namespace KafeKod
             File.WriteAllText("veri.json", json);
         }
 
+        public ListViewItem MasaBul(int masaNo)
+        {
+            foreach (ListViewItem item in lvwMasalar.Items)
+            {
+                if (item.Tag is int && (int)item.Tag == masaNo)
+                {
+                    return item;
+                }
+                else if(item.Tag is Siparis && ((Siparis)item.Tag).MasaNo==masaNo)
+                    return item;
+            }
+            return null;
+        }
+
     }
+
+    
 }
