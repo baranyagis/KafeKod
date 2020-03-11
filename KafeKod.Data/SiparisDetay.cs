@@ -1,19 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace KafeKod.Data
 {
+    [Table("SiparisDetaylar")]
    public  class SiparisDetay
     {
+        public int Id { get; set; }
+
+        [Required,MaxLength(40)]
         public string UrunAd { get; set; }
+
         public decimal BirimFiyat { get; set; }
+
         public int Adet { get; set; }
-        public decimal Tutar() => Adet * BirimFiyat;
 
-        public void SarkiSoyle() => Console.WriteLine("Havada ay ışığı");
+        public int UrunId { get; set; }
 
+        public int SiparisId { get; set; }
+
+        public virtual Urun Urun { get; set; } //SİPARİŞ DETAYLAR 1 ÜRÜNDE OLUR
+
+        public virtual Siparis Siparis { get; set; } //SİPARİŞDETAY 1 SİPARİŞTE BULUNUR
     }
 }
