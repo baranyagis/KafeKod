@@ -16,40 +16,16 @@ namespace KafeKod
 {
     public partial class Form1 : Form
     {
-        KafeContext db;
+        KafeContext db = new KafeContext();
+
 
         public Form1()
         {
-
-            VerileriOku();
             InitializeComponent();
             MasalariOlustur();
         }
 
-        private void VerileriOku()
-        {
-            try
-            {
-                string json = File.ReadAllText("veri.json");
-                db = JsonConvert.DeserializeObject<KafeContext>(json);
-            }
-            catch (Exception)
-            {
-                db = new KafeContext();
-            }
-        }
 
-        #region 3 Urunler Oluştur
-        private void OrnekleriYukle()
-        {
-            db.Urunler = new List<Urun>
-            {
-                new Urun { UrunAd="Kola",BirimFiyat=4.00m},
-                new Urun { UrunAd="Çay",BirimFiyat=2.5m}
-            };
-            db.Urunler.Sort();
-        }
-        #endregion
 
         private void MasalariOlustur()
         {
@@ -64,11 +40,13 @@ namespace KafeKod
 
             #region 1 MASALARI EKLE
             ListViewItem lvi;
-            for (int masaNo = 1; masaNo <= db.MasaAdet; masaNo++)
+            for (int masaNo = 1; masaNo <= Properties.Settings.Default.MasaAdet; masaNo++) //Properties.Settings.Default.MasaAdet 
+                                                                                            //her tarafta kullanmak için ayarlardan ekledik
             {
                 lvi = new ListViewItem("Masa " + masaNo);
                 //Masa boş mu dolu mu?
-                Siparis sip = db.AktifSiparisler.FirstOrDefault(x => x.MasaNo == masaNo);
+                Siparis sip = db.Siparisler
+                    .FirstOrDefault(x => x.MasaNo == masaNo && x.Durum==SiparisDurum.Aktif);
 
                 if (sip==null)
                 {
@@ -103,10 +81,12 @@ namespace KafeKod
                 else
                 {
                     sip = new Siparis();
+                    sip.Durum = SiparisDurum.Aktif; //GARANTİYE ALMAK AMAÇLI
                     sip.MasaNo = (int)lvi.Tag;
                     sip.AcilisZamani = DateTime.Now;
                     lvi.Tag = sip;
-                    db.AktifSiparisler.Add(sip);
+                    db.Siparisler.Add(sip);
+                    db.SaveChanges();
                 }
 
                 SiparisForm frmSiparis1 = new SiparisForm(db, sip);
@@ -115,12 +95,10 @@ namespace KafeKod
 
 
 
-                if (sip.Durum != SiparisDurum.Aktif)
+                if (sip.Durum != SiparisDurum.Aktif) //MASA KAPANDIYSA BOŞALTIYOR
                 {
                     lvi.Tag = sip.MasaNo;
                     lvi.ImageKey = "bos";
-                    db.AktifSiparisler.Remove(sip);
-                    db.GecmisSiparis.Add(sip);
                 }
                 #endregion
             }
@@ -155,8 +133,7 @@ namespace KafeKod
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-           string json = JsonConvert.SerializeObject(db);
-            File.WriteAllText("veri.json", json);
+            db.Dispose();
         }
 
         public ListViewItem MasaBul(int masaNo)

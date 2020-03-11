@@ -22,5 +22,17 @@ namespace KafeKod.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public int MasaAdet {
+            get {
+                return ((int)(this["MasaAdet"]));
+            }
+            set {
+                this["MasaAdet"] = value;
+            }
+        }
     }
 }
