@@ -1,5 +1,4 @@
-﻿using KafeKod.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,59 +7,83 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using KafeKod.Data;
 
 namespace KafeKod
 {
     public partial class UrunlerForm : Form
     {
-        KafeContext db;
-
+        private KafeContext db;
         public UrunlerForm(KafeContext kafeVeri)
         {
             db = kafeVeri;
             InitializeComponent();
             dgvUrunler.AutoGenerateColumns = false;
-            dgvUrunler.DataSource = db.Urunler.OrderBy(x => x.UrunAd).ToList();
+            dgvUrunler.DataSource = new BindingSource(db.Urunler.OrderBy(x => x.UrunAd).ToList(), null);
         }
 
         private void btnEkle_Click(object sender, EventArgs e)
         {
             string urunAd = txtUrunAd.Text.Trim();
-            if (urunAd=="")
+
+            if (urunAd == "")
             {
-                MessageBox.Show("Ürün adını girmediniz!!");
+                MessageBox.Show("Lütfen Bir Ürün Adı Giriniz.");
+                return;
             }
+
             db.Urunler.Add(new Urun
             {
                 UrunAd = urunAd,
                 BirimFiyat = nudBirimFiyat.Value
-
             });
             db.SaveChanges();
-            dgvUrunler.DataSource = db.Urunler.OrderBy(x => x.UrunAd).ToList(); //ÜRÜN ADINA GÖRE SIRALAMA
+            dgvUrunler.DataSource = new BindingSource(db.Urunler.OrderBy(x => x.UrunAd).ToList(), null);
 
         }
 
-        private void dgvUrunler_DataError(object sender, DataGridViewDataErrorEventArgs e) //FİYAT KISMINA HARF GİRMEMESİ İÇİN
+        private void dgvUrunler_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
-            MessageBox.Show("Geçersiz bir değer girdiniz");
+            MessageBox.Show("Lütfen Geçerli Bir Değer Giriniz");
         }
 
         private void dgvUrunler_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
-            if (e.ColumnIndex==0) //UrunAd'ı düzenliyorsa
+            // Ürün Adı Düzenliyorsa
+            if (e.ColumnIndex == 0)
             {
                 if (e.FormattedValue.ToString().Trim() == "")
                 {
-                    dgvUrunler.Rows[e.RowIndex].ErrorText = "Ürünün adı boş olamaz";
+                    dgvUrunler.Rows[e.RowIndex].ErrorText = "Ürün Ad Boş Geçilemez!";
                     e.Cancel = true;
                 }
                 else
                 {
                     dgvUrunler.Rows[e.RowIndex].ErrorText = "";
-                    db.SaveChanges();
                 }
+                    db.SaveChanges();
             }
+        }
+
+
+        // databound item satırla ilişkili nesneyi saklar
+
+        private void dgvUrunler_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            Urun urun = (Urun)e.Row.DataBoundItem;
+            if (urun.SiparisDetaylar.Count>0)
+            {
+                MessageBox.Show("Bu ürün geçmiş siparişlerle ilgili olduğu için silinemez");
+                e.Cancel = true; //SİLMEKTEN VAZGEÇİYOR
+                return;
+            }
+            db.Urunler.Remove(urun);
+            db.SaveChanges();
+        }
+
+        private void UrunlerForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            txtUrunAd.Focus();
         }
     }
 }

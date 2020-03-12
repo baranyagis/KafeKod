@@ -57,6 +57,14 @@
     <Compile Include="Migrations\202003111528482_ilk.designer.cs">
       <DependentUpon>202003111528482_ilk.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202003121333137_urunSiparisDetayCascadeDeleteOff.cs" />
+    <Compile Include="Migrations\202003121333137_urunSiparisDetayCascadeDeleteOff.designer.cs">
+      <DependentUpon>202003121333137_urunSiparisDetayCascadeDeleteOff.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003121427099_uruneStokDurumuEklendi.cs" />
+    <Compile Include="Migrations\202003121427099_uruneStokDurumuEklendi.designer.cs">
+      <DependentUpon>202003121427099_uruneStokDurumuEklendi.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Siparis.cs" />
     <Compile Include="Urun.cs" />
@@ -70,6 +78,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202003111528482_ilk.resx">
       <DependentUpon>202003111528482_ilk.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003121333137_urunSiparisDetayCascadeDeleteOff.resx">
+      <DependentUpon>202003121333137_urunSiparisDetayCascadeDeleteOff.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003121427099_uruneStokDurumuEklendi.resx">
+      <DependentUpon>202003121427099_uruneStokDurumuEklendi.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
