@@ -39,6 +39,7 @@ namespace KafeKod
 
 
             #region 1 MASALARI EKLE
+            lvwMasalar.Items.Clear();
             ListViewItem lvi;
             for (int masaNo = 1; masaNo <= Properties.Settings.Default.MasaAdet; masaNo++) //Properties.Settings.Default.MasaAdet 
                                                                                             //her tarafta kullanmak için ayarlardan ekledik
@@ -150,6 +151,15 @@ namespace KafeKod
             return null;
         }
 
+        private void ayarlarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var frm = new AyarlarForm();
+            DialogResult dr = frm.ShowDialog();
+            if (dr==DialogResult.OK)
+            {
+                MasalariOlustur();
+            }
+        }
     }
 
     
